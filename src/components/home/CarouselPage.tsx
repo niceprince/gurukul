@@ -1,5 +1,6 @@
 "use client";
 
+import type { EmblaCarouselType } from "embla-carousel";
 import {
   Carousel,
   CarouselContent,
@@ -7,14 +8,22 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { ArrowDown } from "lucide-react";
 
+// Slide Type
+interface Slide {
+  image: string;
+  title: string;
+  desc: string;
+}
+
 const CarouselPage = () => {
-  const slides = [
+  const slides: Slide[] = [
     {
       image: "/images/carousel/img1.jpg",
       title: "गुरुकुल — ऋषियों की धरती से ज्ञान का प्रकाश",
@@ -33,14 +42,27 @@ const CarouselPage = () => {
   ];
 
   const [current, setCurrent] = useState(0);
-  const [api, setApi] = useState<any>(null);
+
+  // Embla API – keep relaxed to avoid version-based type issues
+  const [api, setApi] = useState<EmblaCarouselType | null>(null);
 
   useEffect(() => {
     if (!api) return;
 
-    const onSelect = () => setCurrent(api.selectedScrollSnap());
+    const onSelect = () => {
+      try {
+        setCurrent(api.selectedScrollSnap());
+      } catch {
+        // defensive handling
+      }
+    };
+
     api.on("select", onSelect);
     onSelect();
+
+    return () => {
+      api.off("select", onSelect);
+    };
   }, [api]);
 
   return (
@@ -52,6 +74,7 @@ const CarouselPage = () => {
           loop: true,
         }}
       >
+        {/* CONTENT */}
         <CarouselContent className="relative w-full !ml-0 !p-0 flex">
           {slides.map((item, index) => (
             <CarouselItem
@@ -61,20 +84,23 @@ const CarouselPage = () => {
               <div className="relative w-full h-full">
                 <Image
                   src={item.image}
-                  alt=""
+                  alt={item.title}
                   fill
                   sizes="100vw"
                   className="object-cover"
                   priority
                 />
 
+                {/* Overlay */}
                 <div className="absolute inset-0 bg-black/40"></div>
 
+                {/* TEXT */}
                 <div className="absolute inset-0 flex items-center justify-center text-white">
                   <div className="text-center px-4">
                     <h2 className="text-4xl font-bold drop-shadow-lg">
                       {item.title}
                     </h2>
+
                     <p className="text-lg mt-2 drop-shadow-lg">{item.desc}</p>
 
                     <div className="text-center px-4 pt-8 block">
