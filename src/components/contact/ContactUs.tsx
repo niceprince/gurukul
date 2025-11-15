@@ -16,7 +16,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { schoolInfo } from "@/mock/mock";
 
-export const ContactUs = () => {
+const ContactUs = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
@@ -27,7 +27,9 @@ export const ContactUs = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -35,7 +37,7 @@ export const ContactUs = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -277,3 +279,5 @@ export const ContactUs = () => {
     </div>
   );
 };
+
+export default ContactUs;
